@@ -1,0 +1,37 @@
+# npm init
+
+# We keep files on server then upload to 3rd party 
+# git not track empty folders so use: .gitkeep
+# public/temp/.gitkeep
+
+# .gitignore generator: https://mrkandreev.name/snippets/gitignore-generator/
+
+# .env environment are taken from system not from 
+
+# HotReloading we have problem we whenever make changes we have to start and stop server... so to encouter this problem we use: nodemon
+# Nodemon task is to restart the server when ever me save the file after changing
+# dev dependency :- only work on dev mode not get to production time
+
+#  npm i -D nodemon 
+# script :"dev": "nodemon index.js"
+
+# mkdir controllers db middlewares models routes utils
+
+# for to avoid conflicts during merge use: npm i -D prettier
+# .prettierrc :
+ {
+    "singleQuote": true,
+    "bracketSpacing": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "semi": true
+}
+
+# .prettierignore
+/.vscode
+/node_modules
+./dist
+
+*.env
+.env
+.env.*
