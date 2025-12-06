@@ -35,3 +35,19 @@
 *.env
 .env
 .env.*
+
+
+#--------------------------------------------#
+
+Connecting with Mongodb
+
+1. create account-> create cluster -> go to security -> network access -> provide ip address(genrelly this is the ip address of srever machine run) we give 0.0.0.0
+
+2. create user also on same tab of scurity if not created give username passoword(avoid using special characters).
+
+3. connect with cluster it will provide you a string put it in env file add your password in that connection string.
+
+4. now we need to install :- dotenv,express,mongoose
+
+5. Approach 1: index.js directly write
+   Approach 2:db/db.js and export function to index
