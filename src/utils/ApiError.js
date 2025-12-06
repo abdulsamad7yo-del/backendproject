@@ -7,6 +7,7 @@ class ApiError extends Error{
         satck=""
         
     ){
+        
         super(message)
         this.statusCode=statusCode
         this.data= null
