@@ -86,4 +86,51 @@ Now app.js work express
 
 8. we have actually 4 thing (err,req,resp,next) 
 
-9. Standardisation of Error and Response by making class and 
+9. Standardisation of Error and Response by making class and extend Error to add your own thing and inheirt from it
+
+#--------------------------------------------------------------------#
+
+Working on User Model & JWT
+
+1. make user.model.js and video.js linked to each other 
+2. installed mongoose-aggregrate-pagenate 
+
+3. install bcrypt or bcryptjs we are using bcrypt : library to just hash your password and compare { bcrypt.hash(password,rounds) bcrypt.compare(password,otherpassowrd)
+
+4. install jwt , jwt is bearer token, who have it is authentic 
+
+5. we use Hooks(like middleware) of Mongoose:- Pre(when want to do just before saving or doing soemthing on db do task), Post..etc 
+6. Using Pre: when user signUp we use Pre to encrypt password before saving 
+
+7. userSchema.pre("<beforetask>",callback) 
+
+   <beforetask> Ex : save, validate, remove, updateOne,deleteOne
+
+   callback should be like function(next){} because we want "this" context
+
+Code:
+   userSchema.pre("save",async function (next) {
+
+    if(!this.isModified("password")) return //do this only if password is saved again not for every fields
+
+    this.password=bcrypt.hash(this.password,10)
+    next()
+})
+
+8. can also make method using userSechma.methods. in model
+
+   userSchema.methods.isPasswordCorrect = async function (password) {
+      return await bcrypt.compare(password, this.password)
+
+   }
+
+9. Talking about Access Token(jwt) ,Refresh Token(also jwt)  and there Expiry stored in env.
+
+         jwt.sign(
+              payload//can be object or anything,
+              secret,
+              {
+                 expiresIn:1d
+              }
+           
+         )
