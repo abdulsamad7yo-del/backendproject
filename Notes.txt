@@ -2,32 +2,35 @@
 
 # We keep files on server then upload to 3rd party 
 # git not track empty folders so use: .gitkeep
-# public/temp/.gitkeep
+ public/temp/.gitkeep
 
-# .gitignore generator: https://mrkandreev.name/snippets/gitignore-generator/
+1. .gitignore generator: https://mrkandreev.name/snippets/gitignore-generator/
 
-# .env environment are taken from system not from 
+2. .env environment are taken from system not from 
 
-# HotReloading we have problem we whenever make changes we have to start and stop server... so to encouter this problem we use: nodemon
-# Nodemon task is to restart the server when ever me save the file after changing
-# dev dependency :- only work on dev mode not get to production time
+3. HotReloading we have problem we whenever make changes we have to start and stop server... so to encouter this problem we use: nodemon
+4. Nodemon task is to restart the server when ever me save the file after changing
+   dev dependency :- only work on dev mode not get to production time
 
-#  npm i -D nodemon 
-# script :"dev": "nodemon index.js"
+5. npm i -D nodemon 
+   script :"dev": "nodemon index.js"
 
-# mkdir controllers db middlewares models routes utils
+6. mkdir controllers db middlewares models routes utils
 
-# for to avoid conflicts during merge use: npm i -D prettier
-# .prettierrc :
- {
+7. for to avoid conflicts during merge use:
+   npm i -D prettier
+  
+8.file:
+  .prettierrc :
+  {
     "singleQuote": true,
     "bracketSpacing": true,
     "tabWidth": 2,
     "trailingComma": "es5",
     "semi": true
-}
+ }
 
-# .prettierignore
+ .prettierignore
 /.vscode
 /node_modules
 ./dist
@@ -41,7 +44,7 @@
 
 Connecting with Mongodb
 
-1. create account-> create cluster -> go to security -> network access -> provide ip address(genrelly this is the ip address of srever machine run) we give 0.0.0.0
+1. create account-> create cluster -> go to security -> network access -> provide ip address(genrelly this is the ip address of srever machine run(only our server can access the db)) we give 0.0.0.0(excess to every one)
 
 2. create user also on same tab of scurity if not created give username passoword(avoid using special characters).
 
@@ -55,19 +58,20 @@ Connecting with Mongodb
 6. Advices: use try catch, async await, check your connection string , import may have problem like db ❌  db.js ✅   
 
 #---------------------------------------#
-express
+Express
+
 1. in app.js we use express 
 2. and app.listen will be in index.js using .then() after db connection function runs, its returns promise.
 
-Now app.js work express 
+Now app.js express work 
 
 3. documentation read , we mainly learn for request and response
 
 4. Request: req.cookies,req.params
 
-5. installing CORS and COOKIES PArser   (app.use() //middleware)
+5. installing CORS and COOKIES Parser   (app.use() //middleware)
 
-6. Nowimport both and using cors with app.use(cors({ origin:env.CorsOrigin, }))
+6. Now import both and using cors with app.use(cors({ origin:*, }))
 
 7. Some configuration (do with app.use()) : 
    
