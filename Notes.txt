@@ -1,7 +1,7 @@
 # npm init
 
-# We keep files on server then upload to 3rd party 
-# git not track empty folders so use: .gitkeep
+# We keep files on server then--> upload to 3rd party 
+# git not track empty Folders so use: .gitkeep
  public/temp/.gitkeep
 
 1. .gitignore generator: https://mrkandreev.name/snippets/gitignore-generator/
@@ -13,14 +13,14 @@
    dev dependency :- only work on dev mode not get to production time
 
 5. npm i -D nodemon 
-   script :"dev": "nodemon index.js"
+   script :{ "dev": "nodemon index.js"}
 
 6. mkdir controllers db middlewares models routes utils
 
 7. for to avoid conflicts during merge use:
    npm i -D prettier
   
-8.file:
+8. File:
   .prettierrc :
   {
     "singleQuote": true,
@@ -44,16 +44,19 @@
 
 Connecting with Mongodb
 
-1. create account-> create cluster -> go to security -> network access -> provide ip address(genrelly this is the ip address of srever machine run(only our server can access the db)) we give 0.0.0.0(excess to every one)
+1. create account-> create cluster -> go to security -> network access -> provide ip address(generally this is the ip address of srever machine run(only our server can access the db)) we give 0.0.0.0(excess to every one)
 
 2. create user also on same tab of scurity if not created give username passoword(avoid using special characters).
 
-3. connect with cluster it will provide you a string put it in env file add your password in that connection string.
+3. connect with cluster it will provide you a string and put it in env file add your password in that connection string.
 
 4. now we need to install :- dotenv,express,mongoose
 
 5. Approach 1: index.js directly write using IIFE
    Approach 2:db/db.js and export function to index
+   syntax:
+   const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
+
 
 6. Advices: use try catch, async await, check your connection string , import may have problem like db ❌  db.js ✅   
 
@@ -73,18 +76,20 @@ Now app.js express work
 
 6. Now import both and using cors with app.use(cors({ origin:*, }))
 
-7. Some configuration (do with app.use()) : 
+7. Some configurations: (do with app.use(____)) 
    
-   > (express.json({limit:"16kb"}))
+   -> (express.json({limit:"16kb"}))
 
-   > (express.urlencoded(
+   -> (express.urlencoded(
      {
         extended: true, limit: "16kb"
      }
-     )) accept the data from url like what will be ... /abdul samad -> /abdul%samad or /abdul+samad any from will be accepted
+     )) 
+     
+     //accept the data from url like what will be ... /abdul samad -> /abdul%samad or /abdul+samad any from will be accepted
 
 
-   > (express.static("public")) use to store files on own server public assest example favicon
+   > (express.static("public")) use to store files on own server: public assest ,example: favicon
 
    > (cookiesParser()) help to perform crud operation on cookies
 
@@ -99,39 +104,40 @@ Working on User Model & JWT
 1. make user.model.js and video.js linked to each other 
 2. installed mongoose-aggregrate-pagenate 
 
-3. install bcrypt or bcryptjs we are using bcrypt : library to just hash your password and compare { bcrypt.hash(password,rounds) bcrypt.compare(password,otherpassowrd)
+3. install bcrypt or bcryptjs we are using bcrypt : library to just hash your password and compare { bcrypt.hash(password,rounds) and bcrypt.compare(password,otherpassowrd)}
 
 4. install jwt , jwt is bearer token, who have it is authentic 
 
-5. we use Hooks(like middleware) of Mongoose:- Pre(when want to do just before saving or doing soemthing on db do task), Post..etc 
+5. we use Hooks of Mongoose (like middleware):- Pre(when want to do just before saving or doing soemthing on db do task), Post..etc 
 6. Using Pre: when user signUp we use Pre to encrypt password before saving 
 
 7. userSchema.pre("<beforetask>",callback) 
 
-   <beforetask> Ex : save, validate, remove, updateOne,deleteOne
+   <beforetask> Ex : save, validate, remove, updateOne, deleteOne
 
    callback should be like function(next){} because we want "this" context
 
-Code:
-   userSchema.pre("save",async function (next) {
+-> Code:
 
-    if(!this.isModified("password")) return //do this only if password is saved again not for every fields
+   userSchema.pre("save", async function (next) {
 
-    this.password=bcrypt.hash(this.password,10)
-    next()
+      if(!this.isModified("password")) return //do this only if password is saved again not for every fields
+
+      this.password=bcrypt.hash(this.password,10)
+      next()
 })
 
 8. can also make method using userSechma.methods. in model
-
-   userSchema.methods.isPasswordCorrect = async function (password) {
+ 
+-> userSchema.methods.isPasswordCorrect = async function (password) {
       return await bcrypt.compare(password, this.password)
 
    }
 
 9. Talking about Access Token(jwt) ,Refresh Token(also jwt)  and there Expiry stored in env.
 
-         jwt.sign(
-              payload//can be object or anything,
+   ->   jwt.sign(
+              payload ,   //can be object or anything
               secret,
               {
                  expiresIn:1d

@@ -20,7 +20,8 @@ app.use(express.json(
 //accept the data from url like what will be ... abdul samad -> abdul%samad or abdul+samad any from will be accepted
 app.use(express.urlencoded(
     {
-        extended: true, limit: "16kb"
+        extended: true, 
+        limit: "16kb"
     }
 ))
  

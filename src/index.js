@@ -11,6 +11,7 @@ dotenv.config({
 const app = express();
 connectDB()
     .then(() => {
+        // listen for requests only after successful connection to the database
         app.listen(process.env.PORT || 8000, () => {
             console.log("Server is running on port:", process.env.PORT);
 
