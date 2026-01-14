@@ -257,3 +257,116 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 export { upload }; 
+
+#----------------------------------------------#
+
+                     HTTPS
+
+- Hypertext Transfer Protocol (HTTP): trnasfer data over the web
+- Https is secure version of http use TLS/SSL to encrypt data.
+- HTTPS use port 443 and HTTP use port 80
+
+- Http headers: metadata about request and response
+  - caching,content-type,authorization,cookie
+    old : X-prefix -> deprecated
+
+  - Request headers: sent by client to server
+  - Response headers: sent by server to client
+  - Representation headers: encoding/compression of data
+  - Payload headers: data 
+
+Most Common Header:
+ 1. Accept:application/json
+ 2. Content-Type
+ 3. Authorization: Bearer <token>
+ 4. Cookie: key=value; key2=value2
+ 5. Cache-Control: no-cache
+ 6. User-Agent: Mozilla/5.0  // help to get user browser info
+
+For CORS:
+   1. Access-Control-Allow-Origin: *
+   2. Access-Control-Allow-Methods: GET,POST,PUT,DELETE
+   3. Access-Control-Allow-Headers: Content-Type,Authorization
+
+Security:
+ 1. Cross-Origin-Embedding-Policy: require-corp
+ 2. Cross-Origin-Opener-Policy: same-origin
+ 3. X-XSS-Protection: 1; mode=block
+ 4. X-Content-Type-Options: nosniff
+
+
+HTTP Methods:
+ 1. GET: fetch data
+ 2. POST: create data
+ 3. PUT: update data
+ 4. DELETE: delete data
+ 5. PATCH: partial update
+ 6. OPTIONS: preflight request (what methods are allowed)
+ 7. HEAD: fetch headers only
+ 8. TRACE: echo back request (for debugging)
+
+Status Codes:
+ 1xx : Informational
+ 2xx : Success
+ 3xx : Redirection
+ 4xx : Client Error
+ 5xx : Server Error
+
+ 100 : Continue
+ 102 : Processing
+ 200 : OK
+ 201 : Created
+ 204 : No Content
+ 300 : Multiple Choices
+ 309 : Conflict
+ 400 : Bad Request
+ 401 : Unauthorized
+ 403 : Forbidden
+ 404 : Not Found
+ 500 : Internal Server Error
+ 502 : Bad Gateway
+ 504 : Gateway Timeout
+
+Short Notes:
+
+1. HTTP is stateless protocol
+2. Client send request to server
+3. Server process request and send response
+4. Client process response and display to user
+5. Each request is independent of other request
+6. To maintain state we use cookies,session,jwt
+7. HTTP methods: GET,POST,PUT,DELETE,PATCH,OPTIONS,HEAD
+8. HTTP status codes: 1xx,2xx,3xx,4xx,5xx
+9. HTTP headers: key-value pairs sent in request and response
+
+RESTful API: Representational State Transfer
+11. RESTful API principles:
+      - Stateless
+      - Client-Server architecture
+      - Uniform interface
+      - Resource-based
+      - Use of HTTP methods
+      - Use of HTTP status codes
+      - HATEOAS (Hypermedia as the Engine of Application State)
+
+12. RESTful API design:
+      - Use nouns for resources
+      - Use plural nouns for resource collections
+      - Use HTTP methods to perform actions on resources
+      - Use query parameters for filtering, sorting, and pagination
+      - Use proper HTTP status codes in responses
+
+13. Example of RESTful API endpoints for a User resource:
+      - GET /users - Get all users  
+      - GET /users/:id - Get a user by ID
+      - POST /users - Create a new user
+      - PUT /users/:id - Update a user by ID
+      - DELETE /users/:id - Delete a user by ID
+
+14. Tools for testing RESTful APIs: Postman, Insomnia, curl
+
+15. Documentation for RESTful APIs: Swagger, OpenAPI
+16. Versioning of RESTful APIs: URI versioning, Header versioning, Query parameter
+
+
+
