@@ -144,3 +144,116 @@ Working on User Model & JWT
               }
            
          )
+
+#--------------------------------------------------#
+Cloudinary & multer
+
+- we can also use express fileupload but we are using multer
+
+- cloudinary is 3rd party to store images and videos.
+- multer is middleware to handle multipart form data(when we upload file using form) hand file to cloudinary
+# Flow:
+   - We take file thrrough multer and temprorary store on local server
+   - From local storage we take file and upload to cloudinary
+   - ( Why storing on local server : it help in reuploading if any failure occur during upload to cloudinary)
+
+- create utils/cloudinary.js
+  cloudinary needs path of file to upload so we use fs module of nodejs to read file from local storage and give path to cloudinary
+
+import fs from 'fs';
+  
+   - it is a file system module helps to work with files. Read about it on nodejs doc.
+   - Some important methods:
+      - fs.unlinkSync(path) : delete file on given path (in os files are link and unlink means delete the link to file so file is deleted)
+      - fs.readFileSync(path) : read file on given path
+      - fs.writeFileSync(path,data) : write data to file on given path
+
+import { v2 as cloudinary } from 'cloudinary';
+
+save cloudnaame,apikey,apisecret in env file and access here using process.env
+
+now code:
+
+1. we have done configuration of cloudinary
+2. we make function to upload file to cloudinary:
+
+export const uploadToCloudinary = async (filePath, folder, resourceType) => {
+  try {
+    const result = await cloudinary.uploader.upload(filePath, 
+    // options learned from docs
+    {
+      folder: folder,
+      resource_type: resourceType, // image, video, raw
+    });
+
+
+    return result.url;
+
+  } catch (error) {
+    // Delete the local file in case of an error as well
+    fs.unlinkSync(filePath);
+    throw error;
+  }
+};
+
+----------
+Middleware folder
+
+1. create multer.middleware.js
+
+DOCS:
+
+import multer from 'multer';
+
+const multer = require('multer');
+const uploaD = multer({ dest: 'uploads/' }); //destination folder
+
+app.use(uploaD.single('file')); //for Single file upload with field name 'file'
+
+or
+
+// array of files with field name 'files' and max count 10
+
+          //route   // file upload middleware  // controller
+app.post('/upload', uploaD.array('files', 10), (req, res) => {
+  // Handle the uploaded files in req.files
+});
+
+or 
+
+uploaD.fields([
+  { name: 'avatar', maxCount: 1 },
+  { name: 'gallery', maxCount: 8 }
+]) 
+
+// for multiple fields with different names
+
+To Save :
+1. DiskStorage: to give custom file name and destination
+2. MemoryStorage: to save in memory as buffer // Not recommended for large files
+
+DiskStorage Example:
+
+import multer from 'multer';
+
+const storage = multer.diskStorage({
+
+    // file use given by multer
+    destination: function (req, file, cb) {
+        cb(null, './public/temp'); // specify the destination directory
+    },
+
+    filename: function (req, file, cb) {
+        
+        // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9); // unique file name
+        // console.log(file);
+        
+        cb(null,file.originalname); // set the file name original name as userd file name;
+        
+    }
+
+});
+
+const upload = multer({ storage: storage });
+
+export { upload }; 
