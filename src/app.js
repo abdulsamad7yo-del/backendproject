@@ -1,11 +1,11 @@
 import express from "express"
 import cors from "cors"
-import cookiesParser from "cookies-parser"
+import cookiesParser from "cookie-parser"
 
 const app = express();
 
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: "*",
     credentials: true
 
 }))
@@ -31,4 +31,12 @@ app.use(express.static("public"))
 // help to perform crud operation on cookies
 app.use(cookiesParser())
 
-export { app }
+import userRouter from "./routes/user.routes.js"
+
+// routes declaration
+
+app.use("/api/v1/users",userRouter)
+
+// http://localhost:4000/api/v1/users/register
+
+export  { app }

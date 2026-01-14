@@ -2,13 +2,15 @@
 import dotenv from "dotenv";
 import connectDB from "./db/db.js";
 import express from "express";
+import { app } from "./app.js";
 
 dotenv.config({
     path: "./.env"
 });
 
 // Second APPROACH
-const app = express();
+
+
 connectDB()
     .then(() => {
         // listen for requests only after successful connection to the database

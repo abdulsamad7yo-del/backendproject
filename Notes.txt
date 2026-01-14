@@ -268,7 +268,7 @@ export { upload };
 
 - Http headers: metadata about request and response
   - caching,content-type,authorization,cookie
-    old : X-prefix -> deprecated
+     old : X-prefix -> deprecated
 
   - Request headers: sent by client to server
   - Response headers: sent by server to client
@@ -368,5 +368,43 @@ RESTful API: Representational State Transfer
 15. Documentation for RESTful APIs: Swagger, OpenAPI
 16. Versioning of RESTful APIs: URI versioning, Header versioning, Query parameter
 
+#--------------------------------------------------#
+                  Router and Controller
 
+1. Making controller folder and user.controller.js
+   we have earlier made asyncHandler.js in utils to handle async errors, just a wrapper function to handle try catch
 
+2. In user.controller.js we make registerUser function and export it.
+   
+   import {asyncHandler} from '../utils/asyncHandler.js';
+
+    const registerUser = asyncHandler(async (req, res) => {
+        res.status(200).jsson({
+            message:"OK"
+        })
+    } );
+
+    export { registerUser };
+
+3. Now make user.routes.js in routes folder
+
+   import {Router} from 'express';
+
+   const router = Router();
+
+   // /api/v1/users/register
+   import { registerUser } from '../controllers/user.controller.js';
+   router.route("/register").post(registerUser);
+
+    export default router;
+
+4. Now in app.js we import userRouter and use it
+
+   import userRouter from "./routes/user.routes.js"
+
+   // routes declaration
+- we are not using app.get("/users",...) because we want to keep our routes in separate file for better management
+- so when all thing are seprate like routes,controllers,models it is called MVC architecture(Model View Controller)
+- we have to use router middleware that is app.use()
+  
+   app.use("/api/v1/users", userRouter) 
