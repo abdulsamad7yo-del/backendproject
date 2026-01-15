@@ -393,6 +393,7 @@ RESTful API: Representational State Transfer
    const router = Router();
 
    // /api/v1/users/register
+
    import { registerUser } from '../controllers/user.controller.js';
    router.route("/register").post(registerUser);
 
@@ -408,3 +409,130 @@ RESTful API: Representational State Transfer
 - we have to use router middleware that is app.use()
   
    app.use("/api/v1/users", userRouter) 
+
+5. Now run Server and user PostMan to post request to /api/v1/users/register  
+
+Flow : index.js and db.js -> app.js(/api/v1/user) -> user.routes.js(/register) -> user.controller.js 
+
+#--------------------------------------------------#
+
+Writing Actual Controller Logic and Routes
+
+1. Register User controller logic:
+  - get user details  from frontend
+  - validation - not empty, check if user already exists(username and email) 
+  - check for images, check for avatar because required
+  - upload to cloudinary (gives response we have to store url)
+  - create user object-- create entry in db
+  - response(remove password and refresh token from response) 
+  - check for user creation success or not
+  - send response 
+
+2. We access req.body (it was parsed by middleware app.use(express.json())) , we only now doing for json data if we want to access form data we use app.use(express.urlencoded({extended:true})) so select raw->JSON in Postman
+
+3. Now File handling Avatar:
+   
+   in user.routes.js
+   import { upload } from '../middlewares/multer.middleware.js';
+
+   In route:
+   
+   router.route("/register").post(
+       upload.fields([
+         {
+            name:"",
+            maxCount:1
+
+         },
+         {
+
+         }
+       ]),  //fields bc we may have multiple files with different field names
+       registerUser
+   );
+
+   types:
+   upload.single('avatar') // for single file with field name avatar
+   upload.array('photos', 10) // for multiple files with same field name photos and max count 10
+   upload.fields([
+       { name: 'avatar', maxCount: 1 },
+       { name: 'gallery', maxCount: 8 }
+   ])
+
+4. Now back to conroller 
+   
+   we now do validation and For Error we used Our APIError class made earlier
+   
+   import { APIError } from '../utils/APIError.js';
+
+   if (username==" ) {
+       throw new APIError(400,"Provide username");
+   }
+
+   API error have : 
+        statusCode,
+        message="Something went worng",
+        errors=[],
+        satck=""
+
+so we can provide status code and message
+ it extends Error class so it have all properties of Error class and throw error from it 
+
+5. Now check if user already exists using User model we made earlier
+
+   import { User } from '../models/user.model.js';
+
+   const existingUser = await User.findOne({ $or: [ { email }, { userName } ] });
+
+   if (existingUser) {
+       throw new APIError(409, "User already exists with given email or username");
+   }
+
+6. Now Files handling:
+
+    // access files with help of multer middleware
+    // So here multer have uplaoded the files to local server and we acces using req.files
+    // now we get the path of file
+    // console.log(req?.files);
+    
+    const avatarLocalPath = req.files?.avatar[0]?.path
+    const coverImageLocalPath = req.files?.coverImage?.[0]?.path
+
+    // avater is required
+
+    if(!avatarLocalPath){
+        throw new ApiError(400,"Avatar is required")
+    }
+
+7. Create User using User
+   
+   const user = await User.create({
+        fullName,
+        userName: userName.toLowerCase(),
+        email,
+        avatar: avatar.url,
+        // optional so can be empty
+        coverImage: coverImage?.url || "",
+        password
+    })
+
+8. Check for user creation success and remove password and refresh token
+    const createdUser = await User.findById(user._id).select(
+        // we write what we dont want 
+        "-password -refreshToken"
+    )
+
+    if (!createdUser) {
+        throw new ApiError(500, "User registration failed")
+    }
+ 
+9. Response:
+
+    // using ApiResponse have (statusCode,data,message)
+
+    return res.satus(201).json(
+        new ApiResponse(200,createdUser,"User registered successfully",)
+    )
+
+#--------------------------------------------------#
+

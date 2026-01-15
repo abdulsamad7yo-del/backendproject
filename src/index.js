@@ -1,8 +1,7 @@
 //require("dotenv").config(path: "./.env"); // COMMON JS SYNTAX but require and import cannot be used together
 import dotenv from "dotenv";
-import connectDB from "./db/db.js";
-import express from "express";
 import { app } from "./app.js";
+import connectDB from "./db/db.js";
 
 dotenv.config({
     path: "./.env"
