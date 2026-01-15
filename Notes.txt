@@ -124,7 +124,7 @@ Working on User Model & JWT
       if(!this.isModified("password")) return //do this only if password is saved again not for every fields
 
       this.password=bcrypt.hash(this.password,10)
-      next()
+    
 })
 
 8. can also make method using userSechma.methods. in model
@@ -473,7 +473,7 @@ Writing Actual Controller Logic and Routes
         statusCode,
         message="Something went worng",
         errors=[],
-        satck=""
+        stack=""
 
 so we can provide status code and message
  it extends Error class so it have all properties of Error class and throw error from it 
@@ -530,9 +530,38 @@ so we can provide status code and message
 
     // using ApiResponse have (statusCode,data,message)
 
-    return res.satus(201).json(
+    return res.status(201).json(
         new ApiResponse(200,createdUser,"User registered successfully",)
     )
 
 #--------------------------------------------------#
+
+Checking and Debugging & PostMan Professional way
+1. In user.controller.js we can use console.log at various places to check the flow and data
+2. add fs.unlinkSync(localfilePath); after successful upload to cloudinary to delete local file and save space
+3. Typo mistakes are common so check carefully.
+
+PostMan Professional way:
+1. Use Environments: create environment for dev,prod etc and store variables like baseUrl
+   - In url use {{baseUrl}}/api/v1/users/register
+   - In env set baseUrl=http://localhost:8000 for 
+
+2. Create Collections: group related requests
+   - Create collection "User API"
+   - Add request to collection.
+
+   
+3. Use Pre-request Scripts: run scripts before request
+   - Generate auth tokens
+4. Use Tests: write tests to validate response
+   - pm.test("Status code is 201", function () {
+       pm.response.to.have.status(201);
+     });
+5. Use Variables: store reusable values
+   - {{userId}}, {{authToken}}
+6. Documentation: generate API docs
+   - Share with team
+   - Monitor: schedule requests   "
+
+
 

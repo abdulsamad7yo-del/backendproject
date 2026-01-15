@@ -52,14 +52,14 @@ const userSchema = new Schema(
     },
     { timestamps: true })
 
-// Mongoose Hooks : Pre Middleware    
+// Mongoose Hooks : "Pre" Middleware    
 userSchema.pre("save", async function (next) {
 
-    // checking if "password" is modified or not
+    // checking if "password" isModified or not
     if (!this.isModified("password")) return
 
     this.password = await bcrypt.hash(this.password, 10)
-    next()
+    // next()
 })
 
 // creating method

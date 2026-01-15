@@ -4,7 +4,7 @@ class ApiError extends Error{
         statusCode,
         message="Something went worng",
         errors=[],
-        satck=""
+        stack=""
         
     ){
         

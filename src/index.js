@@ -9,7 +9,6 @@ dotenv.config({
 
 // Second APPROACH
 
-
 connectDB()
     .then(() => {
         // listen for requests only after successful connection to the database
@@ -22,14 +21,6 @@ connectDB()
         console.log("MONGODB connection Failed", err);
 
     })
-
-
-
-
-
-
-
-
 
 
 

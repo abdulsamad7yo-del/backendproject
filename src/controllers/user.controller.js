@@ -32,7 +32,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // check if user already exists
-    const existingUser = User.findOne({
+    const existingUser = await User.findOne({
         $or: [{ email }, { userName }]
     })
 
@@ -46,7 +46,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // console.log(req?.files);
 
     const avatarLocalPath = req.files?.avatar[0]?.path
-    const coverImageLocalPath = req.files?.coverImage?.[0]?.path
+    const coverImageLocalPath = req.files?.coverImage?.[0]?.path || null
 
     // avater is required
     if (!avatarLocalPath) {
@@ -90,7 +90,7 @@ const registerUser = asyncHandler(async (req, res) => {
     // response
     // using ApiResponse
 
-    return res.satus(201).json(
+    return res.status(201).json(
         new ApiResponse(200,createdUser,"User registered successfully",)
     )
 
