@@ -537,6 +537,7 @@ so we can provide status code and message
 #--------------------------------------------------#
 
 Checking and Debugging & PostMan Professional way
+
 1. In user.controller.js we can use console.log at various places to check the flow and data
 2. add fs.unlinkSync(localfilePath); after successful upload to cloudinary to delete local file and save space
 3. Typo mistakes are common so check carefully.
@@ -550,7 +551,7 @@ PostMan Professional way:
    - Create collection "User API"
    - Add request to collection.
 
-   
+
 3. Use Pre-request Scripts: run scripts before request
    - Generate auth tokens
 4. Use Tests: write tests to validate response
@@ -561,7 +562,32 @@ PostMan Professional way:
    - {{userId}}, {{authToken}}
 6. Documentation: generate API docs
    - Share with team
-   - Monitor: schedule requests   "
+   - Monitor: schedule requests"
+
+#--------------------------------------------------#
+Login & Access Token and Refresh Token 
+
+1. Access Token: short-lived token to access protected resources
+   - Sent in Authorization header as Bearer token
+   - Valid for few minutes to hours
+   - Used to authenticate API requests
+
+2. Refresh Token: long-lived token to obtain new access tokens
+   - Sent in HttpOnly cookie
+   - Valid for days to months
+   - Used to get new access token when it expires
+
+Flow: Login:
+      ->Send Access Token in response body and Refresh Token in HttpOnly Cookie (store in db also)
+      ->Client store Access Token in memory and use it in Authorization header for protected requests
+      ->When Access Token expires Client send request to refresh endpoint with Refresh Token cookie
+      ->Server verify Refresh Token (from db) and send new Access Token in response body.
+      ->Repeat.
+
+* check user.controller.js for loginUser function implementation 
+
+
+
 
 
 

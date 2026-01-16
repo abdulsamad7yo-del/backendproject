@@ -8,7 +8,7 @@ const asyncHandler = (requestHandler) => {
 export { asyncHandler }
 
 
-
+// OR Other way
 // wrapper function handle
 
 // const asyncHandler=(fn)=> async (req,res,next)=>{
