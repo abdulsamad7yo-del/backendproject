@@ -7,7 +7,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
     try {
         // verify JWT from cookies
         // accessToken in cookies (access due to cookie parser middleware)  and get get token from header as well if not in cookies
-        const token = req.cookies.accessToken || req.headers("Authorization")?.split(" ")[1];
+        const token = req.cookies.accessToken || req.header("Authorization")?.split(" ")[1];
 
         if (!token) {
             throw new ApiError(401, "Unauthorized: No token provided");
@@ -20,7 +20,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
 
         const user = await User.findById(decodedToken?._id)
-            .select("-password - refreshToken")
+            .select("-password -refreshToken")
 
         if (!user) {
 

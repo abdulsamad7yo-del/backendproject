@@ -597,7 +597,7 @@ Flow: Login:
             new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully")
         )
 
-        
+
 * Check user.controller.js for loginUser function implementation
 * Go through mongoose methods and middleware in mongoose for better understanding. 
 
@@ -618,9 +618,11 @@ Here Middleware come into picture:
 - We have "cookiesParser" middleware to parse cookies from request headers.
 - So we can access cookies using req.cookies and res.cookies both.
 
-- Now we make auth.middleware.js in middlewares folder to verify JWT from cookies.
- // accessToken have many things in it we signed like _id,email,username,fullName 
- // so we can just decode( jwt.verify() gives decoded data) it and get user _id 
+- Now we make auth.middleware.js in middlewares folder to verify (DECODE) JWT from cookies.
+- AccessToken have many things in it we signed like { _id, email, userName, fullName }
+- So we can just decode( jwt.verify() gives decoded data) it.
+- and get user _id 
+
 - we after verifing we take _id can get  user from db 
 - and add that user to req:  req.user = user
 - and at last of middleware function always write :  next() 
@@ -638,7 +640,24 @@ How to use Middleware function
      post.(mid1,mid2,mid3,finalfunction)  
    - // same request pass to all can be modified by previous middleware
 
+#--------------------------------------------------------------------------#
 
+-We now check above code in PostMan
+ - So its the same process as reqgister you can also do login using "raw" because we used form in register due to File uplaod. (gives all data + accessToken and refreshToken)
+ - And For LogOut , we have to put AccessToken in Authorization : --> Bearer --> <accessToken> in PostMan.
+ - You can also check Cookies in PostMan
 
+ More About AccessToken and RefreshToken:
+  1. AccessToken and RefreshToken are genrated when user login
+  2. AccessToken is given to User and Its short lived and help in access any service by user
+  3. RefreshToken is stored in db and long lived and help in to provide user New accessToken when expired.
 
+  both help user to access service and logout without require of user data 
+  1. So whenever user accessToken expired -> frontend engg. do i request to server asking for new refreshToken-> if there is refersh token (that is user was logged in and session (refershToken not expired) ) presenent it will provide new access token to user
+  2. If user want to logout , user need not to send its email or id , we can just :
+     - get user AccessToken from either cookies (if added by server at the time of login) or req.header(" Authorization").split(" ").[1]
+     - and decode that accessToken(by jwt.verify() ) giving us data we signed with (user :_id) 
+     - _id can be used to get that user and then 
+           i. Remove RefreshToken from db.
+           ii. clearCookies from res
 
