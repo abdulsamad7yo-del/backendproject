@@ -583,9 +583,60 @@ Flow: Login:
       ->When Access Token expires Client send request to refresh endpoint with Refresh Token cookie
       ->Server verify Refresh Token (from db) and send new Access Token in response body.
       ->Repeat.
+   
+   const options = {
+        httpOnly: true, //only modified by server,
+        secure: true, // only send on https
+    }
 
-* check user.controller.js for loginUser function implementation 
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully")
+        )
 
+        
+* Check user.controller.js for loginUser function implementation
+* Go through mongoose methods and middleware in mongoose for better understanding. 
+
+#--------------------------------------------------#
+
+LogOut & Middleware
+
+Ways to logOut User:
+- (WEB) Remove Cookies: clear auth cookies on client side.
+- Invalidate Tokens: remove refresh token from database.
+- (APP) Client-side Cleanup: clear local storage/session storage.
+
+?? if Using Access and Refresh we have to make db call But How we will Get User who is logged in?
+- if we make it like form and which gives us email (by which we can find user in db) and refresh token in cookie but it is not secure because anyone can call this api with any email and logout user.
+
+Here Middleware come into picture:
+
+- We have "cookiesParser" middleware to parse cookies from request headers.
+- So we can access cookies using req.cookies and res.cookies both.
+
+- Now we make auth.middleware.js in middlewares folder to verify JWT from cookies.
+ // accessToken have many things in it we signed like _id,email,username,fullName 
+ // so we can just decode( jwt.verify() gives decoded data) it and get user _id 
+- we after verifing we take _id can get  user from db 
+- and add that user to req:  req.user = user
+- and at last of middleware function always write :  next() 
+
+next() // tells now my work is done go to next function given
+
+How to use Middleware function
+- in user.routes.js:
+   
+   - // secured routes
+                                 // next----->   
+     router.route("/logout").post(verifyJWT, logOutUser)
+
+   - we can write as many as middleware in between but should check order of Writing
+     post.(mid1,mid2,mid3,finalfunction)  
+   - // same request pass to all can be modified by previous middleware
 
 
 

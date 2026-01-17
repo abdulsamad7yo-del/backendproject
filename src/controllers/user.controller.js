@@ -21,7 +21,7 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
 
         // store refresh token in db
         user.refreshToken = refreshToken
-        await user.save({validateBeforeSave:false}) // any validation is skipped like Password{required :true}
+        await user.save({ validateBeforeSave: false }) // any validation is skipped like Password{required :true}
 
         return { accessToken, refreshToken }
 
@@ -162,7 +162,7 @@ const logInUser = asyncHandler(async (req, res) => {
 
     //store inn db
     const loggedInUser = await User.findById(user._id).
-    select("-password -refreshToken");
+        select("-password -refreshToken");
 
     const options = {
         httpOnly: true, //only modified by server,
@@ -170,22 +170,49 @@ const logInUser = asyncHandler(async (req, res) => {
     }
 
     return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-        new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully")
-    )
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully")
+        )
 
 });
 
-const logOutUser= asyncHandler(async (req,res)=>{
+const logOutUser = asyncHandler(async (req, res) => {
     // logout user logic here
     //  from cookies
     // remove refresh token from db
     // response
 
-    
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                refreshToken: undefined
+            }
+        },
+        {
+            new: true
+
+        }
+    )
+
+    const options = {
+        httpOnly: true, //only modified by server,
+        secure: true, // only send on https
+    }
+
+    return res
+        .status(200)
+        .cookie("accessToken", options)
+        .cookie("refreshToken", options)
+        .json(
+            new ApiResponse(201, {}, "User Logged Out")
+        )
+
+
+
 })
 
-export { registerUser, logInUser };
+export { registerUser, logInUser, logOutUser };
