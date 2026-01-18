@@ -669,7 +669,7 @@ End Point to refreshAccessToken in user.controller.js:
  - then check if refreshToken is present or not 
  - if yes we genrate access token
  - and in reseponse we set accessToken, refershToken and json reseponse
-  
+Add route in user routes in secured section 
 
 
 

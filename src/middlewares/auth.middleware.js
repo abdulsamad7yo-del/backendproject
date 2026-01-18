@@ -28,10 +28,11 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
         }
 
         req.user = user;
-        next() // tells now my work is done go to next function given
+        next() // tells: now my work is done go to next function given
     } catch (error) {
 
-        throw new ApiError(401, error?.message || "Invalid Access Token")
+        throw new ApiError(401, error?.message || "Invalid Access Token") 
+        // can be due to jwt.verify (because it also thorw error when token is expired or wrong screte key)
 
     }
 
