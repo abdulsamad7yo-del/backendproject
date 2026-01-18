@@ -661,3 +661,15 @@ How to use Middleware function
            i. Remove RefreshToken from db.
            ii. clearCookies from res
 
+#----------------------------------------------------------------------#
+
+End Point to refreshAccessToken in user.controller.js:
+ - we firts get refresh token from cookeis or body (id frontend engg send in that)
+ - we will decode it to get _id 
+ - then check if refreshToken is present or not 
+ - if yes we genrate access token
+ - and in reseponse we set accessToken, refershToken and json reseponse
+  
+
+
+
