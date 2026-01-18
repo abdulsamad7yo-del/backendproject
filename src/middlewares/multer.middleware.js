@@ -3,6 +3,7 @@ import multer from 'multer';
 const storage = multer.diskStorage({
 
     // file use given by multer
+    // we define where is stored temproary
     destination: function (req, file, cb) {
         cb(null, './public/temp'); // specify the destination directory
     },
@@ -21,3 +22,5 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 export { upload };
+
+//------------------ multer work is to just provide filePath ------------------------ 
