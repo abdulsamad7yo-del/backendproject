@@ -671,5 +671,141 @@ End Point to refreshAccessToken in user.controller.js:
  - and in reseponse we set accessToken, refershToken and json reseponse
 Add route in user routes in secured section 
 
+#----------------------------------------------------------------------#
+
+Understanding the Subscription Schema
+ We are going to make conroller for user channel which showes all user data plus we need subscribers and subscription of user
+
+ why we made subscription model ? 
+ we could have just make an array and add Id in it right?
+ : Its good for less data but for large set of data( million subscribers) not good because to perform operations on an array is expensive.
+
+ model: id,subscriber(Multiple other User who are subscribed ),channel(multiple User)
+
+One Document Created Every time user subscribe 
++--------------------+
++ Sub:               +
++ Channel:           +
++--------------------+ 
+
+Example:
+ User: a, b, c, d, e
+ Channel: X, Y, Z
+
+ so if 
+       user 'a' subs -> X => [ Subs:a, Channel:X ]
+       user 'a' subs -> Y => [ Subs:a, Channel:Y ]
+       user 'b' subs -> Y => [ Subs:b, Channel:Y ]
+       user 'c' subs -> Z => [ Subs:c, Channel:Z ]
+
+~ How to get Number subscriber of A Channel?
+   We count the channel name in 'Channel'
+      ex: above we X channel have 1 sub(a),
+           Y channel have 2 sub(a,b) 
+
+~ How to get the Number of Channel User is subscribed ?
+   We count the occurence of User name in 'Subscriber'
+
+#---------------------------------------------------------------------------------------------#
+
+Implementation: Join and Aggregration in Mongodb
+
+const { userName } = req.params
+
+    if (!userName?.trim()) {
+        throw new ApiError(400, "username is missing")
+    }
+
+    // aggregation it gives in form of array(if not done opertion to return specfic object form array(yes you can do )).
+    // User.aggregate( [ {pipeline1},{pipeline2},{pipeline3} ] )
+    
+    const userChannel = await User.aggregate([
+        {
+            // filter document
+            $match: {
+                userName: userName?.toLowerCase()
+            }
+        },
+
+        // get all subscribers
+        {
+
+            
+            $lookup: {
+                from: "subscriptions", // collection name
+                localField: "_id",
+                foreignField: "channel",
+                as: "subscribers"
+            }
+
+        },
+
+        // get all subscribed channels
+        {
+            
+            $lookup: {
+                from: "subscriptions", // collection name
+                localField: "_id",
+                foreignField: "subscriber",
+                as: "subscribedTo"
+            }
+
+        },
+
+        // count
+        {
+            $addFields: {
+                subscribersCount: {
+                    $size: "$subscribers"
+                },
+                channelsSubscribedToCount: {
+                    $size: "$subscribedTo"
+                },
+                // true or false if subscribed or not
+                isSubscribed: {
+                    $cond: {
+                        // userid present in subscribers.subscriber
+                        if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        // Now to specifc things to retrun
+        {
+            $project:{
+                fullName:1,
+                userName:1,
+                subscribersCount:1,
+                channelsSubscribedToCount:1,
+                isSubscribed:1,
+                avatar:1,
+                coverImage:1,
+                email:1
+
+            }
+        }
+
+    ])
+    
+    // console.log("UserChannel:",userChannel); 
+
+    if(!userChannel?.length()){
+        throw new ApiError(404,"Channel does not exist")
+
+    }
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,userChannel[0],"user channel fecth success")
+    )
+
+
+
+       
+
+
+
 
 

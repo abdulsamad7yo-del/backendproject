@@ -29,6 +29,8 @@ router.route("/logout").post(verifyJWT, logOutUser)
 
 router.route("/refreshToken").post(refreshAccessToken)
 
+// Routes: change password route, updateDetails route, change avatar route, coverImage route
+
 
 
 export default router;
