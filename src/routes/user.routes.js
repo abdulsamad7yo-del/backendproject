@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { logInUser, logOutUser, refreshAccessToken, registerUser } from '../controllers/user.controller.js';
+import { changeCurrentPassword, getCurrentUser, getUserChannelProfile, getUserWatchHistory, logInUser, logOutUser, refreshAccessToken, registerUser, updateAccountDetails, updateUserAvatar, updateUserCover } from '../controllers/user.controller.js';
 import { upload } from '../middlewares/multer.middleware.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
 
@@ -10,12 +10,12 @@ const router = Router();
 router.route("/register").post(
     upload.fields([
         {
-            name:"avatar", // same field name frontend and backend
-            maxCount:1 // files to accept
+            name: "avatar", // same field name frontend and backend
+            maxCount: 1 // files to accept
         },
         {
-            name:"coverImage",
-            maxCount:1
+            name: "coverImage",
+            maxCount: 1
         }
     ]),
     registerUser
@@ -31,6 +31,19 @@ router.route("/refreshToken").post(refreshAccessToken)
 
 // Routes: change password route, updateDetails route, change avatar route, coverImage route
 
+router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 
+router.route("/current-user").get(verifyJWT, getCurrentUser)
+
+router.route("/update-account").patch(verifyJWT, updateAccountDetails)
+
+router.route("/update-avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar)
+
+router.route("/update-cover-image").patch(verifyJWT, upload.single("coverImage"), updateUserCover)
+
+// at time of params
+router.route("/c/:userName").get(verifyJWT, getUserChannelProfile)
+
+router.route("/watch-history").get(verifyJWT, getUserWatchHistory)
 
 export default router;

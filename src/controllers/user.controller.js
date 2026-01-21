@@ -4,6 +4,7 @@ import User from '../models/user.model.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import jwt from "jsonwebtoken"
+import mongoose from 'mongoose';
 
 // token fucntions in one
 
@@ -401,9 +402,10 @@ const getUserChannelProfile = asyncHandler(async (res, req) => {
         throw new ApiError(400, "username is missing")
     }
 
-    // aggregation it gives in form of array(if not done opertion to return specfic object form array(yes you can do )).
+    // Aggregation it gives in form of array(if not done opertion to return specfic object form array(yes you can do )).
     // User.aggregate( [ {pipeline1},{pipeline2},{pipeline3} ] )
-    
+    // lookup is to get related document (relation)
+
     const userChannel = await User.aggregate([
         {
             // filter document
@@ -416,7 +418,7 @@ const getUserChannelProfile = asyncHandler(async (res, req) => {
             // get all subscribers
             $lookup: {
                 from: "subscriptions", // collection name
-                localField: "_id",
+                localField: "_id",     // User _id (which was saved in channel )
                 foreignField: "channel",
                 as: "subscribers"
             }
@@ -485,6 +487,71 @@ const getUserChannelProfile = asyncHandler(async (res, req) => {
     
 })
 
+// nested lookup
+
+const getUserWatchHistory = asyncHandler(async(req,res)=>{
+
+    const user = await User.aggregate([
+        {
+            $match:{
+                _id: new mongoose.Types.ObjectId(req.user._id)
+             
+                //  _id:req.user._id // not work because req.user._id return mongodb id as:  ObjectId('sdajn3jenjen2n') , if we have done it above mongoose handle this and gives _id as string but here not
+            }
+        },
+        {
+            $lookup:{
+                from:"videos",
+                foreignField:"_id",
+                localField:"watchHistory", // is in users
+                as:"watchHistory",
+                // nested pipeline 
+                pipeline:[
+                    // now we are doing aggregation in "videos" model
+                    // get owner(user)
+                    {
+                        $lookup:{
+                            from:"users",
+                            foreignField:"_id",
+                            localField:"owner", // is in vidoes
+                            as:"owner",
+                            // to project to owner itself ?? try projecting outside owner $lookup
+                            pipeline:[
+                                {
+                                    $project:{
+                                        fullName:1,
+                                        username:1,
+                                        avatar:1
+                                    }
+                                }
+                            ]
+                            
+                        }
+                    },
+                    {
+                        $addFields:{
+                            owner:{
+                                $first:"$owner"
+                                 // Or can use $arrayElemAt:["$owner",0] , You say why only first element : beacuse returns an arry of object and in that arry first object is our result only.
+                                 // In above function getUserChannelProfile we are returning full array ,
+                                 // but take a look at the res.json() we only sending [0]
+                                 // we will still done below but its nested , so one part done inside only.
+                                 // otherwise it will have returned like result=[ [ [],[],[] ],[],[] ]
+                                 // but now result = [ [{},{},{}],[],[],[]]
+                                }
+                        }
+                    }
+                ]
+            }
+        }
+    ])
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,user[0].watchHistory,"WatchHistory fetched")
+    )
+})
 
 export {
     registerUser,
@@ -496,5 +563,6 @@ export {
     updateAccountDetails,
     updateUserAvatar,
     updateUserCover,
-    getUserChannelProfile
+    getUserChannelProfile,
+    getUserWatchHistory
 };
