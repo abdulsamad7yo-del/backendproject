@@ -10,7 +10,7 @@ const router = Router();
 router.route("/register").post(
     upload.fields([
         {
-            name: "avatar", // same field name frontend and backend
+            name: "avatar", // same field name frontend and backend, ** this name is used to acces req.files.avatar[0]
             maxCount: 1 // files to accept
         },
         {
