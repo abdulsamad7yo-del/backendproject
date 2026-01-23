@@ -23,4 +23,4 @@ const upload = multer({ storage: storage });
 
 export { upload };
 
-//--NOTE: Multer work is to just to save image on server temporary and  provide filePath, We give this path --- 
+//--NOTE: Multer work is to just to save image on server temporary and  provide filePath, We give this path to cloudinary --- 

@@ -34,7 +34,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
         if (!videoUpload || !thumbnailUpload) {
             throw new ApiError(500, "Error while uploading")
         }
-        
+
         const videoDuration = videoUpload?.duration
         const userId = req.user._id
 
@@ -75,11 +75,37 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
     const { videoId } = req.params
     //TODO: get video by id
+
+    if (!videoId) {
+        throw new ApiError(400, "videoId Not Provided")
+    }
+    try {
+
+        const video = await Video.findById(videoId)
+
+        if (!video) {
+            throw new ApiError(404, "Video not found");
+        }
+
+
+        return res.status(200).json(
+            new ApiResponse(201, video, "Video retrieved successfully")
+        )
+
+    } catch (error) {
+        throw new ApiError(500, "Unable to retrieve video")
+    }
+
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
     const { videoId } = req.params
-    //TODO: update video details like title, description, thumbnail
+    //TODO: update video details like title, description, thumbnail(seprate route is recommended )
+    // 1. take all {title,description}
+    // 2. thumbnail url is taken using req.file.path 
+    // 3. upload to cloudinary and get url 
+    // 4. FindByIdAndUpdate
+    // Video.findByIdAndUpdate(videoId,{title,description,videoFile})
 
 })
 

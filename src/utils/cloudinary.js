@@ -14,18 +14,24 @@ const uploadOnCloudinary = async (localfilePath, folder) => {
 
         // Uploads file to cloudinary
         // method .uploder.upload()
+
        const response = await cloudinary.uploader.upload(localfilePath, {
             resource_type: 'auto',
         });
-        //file is uploaded
+
+        // file is uploaded
         console.log("File is uploaded",response);
+
         fs.unlinkSync(localfilePath);
+
         return response;
         
     } catch (error) {
 
         fs.unlinkSync(localfilePath); // remove the locally saved temprorary file
+        
         console.log("Error while uploading on cloudinary", error);
+        
         return null;
         
     }
