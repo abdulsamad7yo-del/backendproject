@@ -1,20 +1,33 @@
-import mongoose from "mongoose"
-import {Video} from "../models/video.model.js"
-import {Subscription} from "../models/subscription.model.js"
+import mongoose, {isValidObjectId} from "mongoose"
 import {Like} from "../models/like.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 
-const getChannelStats = asyncHandler(async (req, res) => {
-    // TODO: Get the channel stats like total video views, total subscribers, total videos, total likes etc.
+const toggleVideoLike = asyncHandler(async (req, res) => {
+    const {videoId} = req.params
+    //TODO: toggle like on video
 })
 
-const getChannelVideos = asyncHandler(async (req, res) => {
-    // TODO: Get all the videos uploaded by the channel
+const toggleCommentLike = asyncHandler(async (req, res) => {
+    const {commentId} = req.params
+    //TODO: toggle like on comment
+
+})
+
+const toggleTweetLike = asyncHandler(async (req, res) => {
+    const {tweetId} = req.params
+    //TODO: toggle like on tweet
+}
+)
+
+const getLikedVideos = asyncHandler(async (req, res) => {
+    //TODO: get all liked videos
 })
 
 export {
-    getChannelStats, 
-    getChannelVideos
-    }
+    toggleCommentLike,
+    toggleTweetLike,
+    toggleVideoLike,
+    getLikedVideos
+}

@@ -1,16 +1,21 @@
-import mongoose,{Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const subscriptionSchema = new Schema({
-    subscriber:{
+    subscriber: {
         type: Schema.Types.ObjectId, // one who subscribe
-        ref:"User"
+        ref: "User"
 
     },
-    channel:{
+    channel: {
         type: Schema.Types.ObjectId, // one to whom 'subscriber' is subscribing
-        ref:"User"
+        ref: "User"
     }
 
-},{timestamps:true})
+}, { timestamps: true })
 
-export const Subscription =  mongoose.model("Subscription",subscriptionSchema) 
+subscriptionSchema.index(
+    { subscriber: 1, channel: 1 },
+    { unique: true }
+);
+
+export const Subscription = mongoose.model("Subscription", subscriptionSchema) 

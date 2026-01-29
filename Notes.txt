@@ -692,15 +692,16 @@ Example:
  User: a, b, c, d, e
  Channel: X, Y, Z
 
- so if 
-       user 'a' subs -> X => [ Subs:a, Channel:X ]
-       user 'a' subs -> Y => [ Subs:a, Channel:Y ]
-       user 'b' subs -> Y => [ Subs:b, Channel:Y ]
-       user 'c' subs -> Z => [ Subs:c, Channel:Z ]
+ New Document Created Every time user subscribe:
+
+       user 'a' subs -> X => { Subs:a, Channel:X }
+       user 'a' subs -> Y => { Subs:a, Channel:Y }
+       user 'b' subs -> Y => { Subs:b, Channel:Y }
+       user 'c' subs -> Z => { Subs:c, Channel:Z }
 
 ~ How to get Number subscriber of A Channel?
    We count the channel name in 'Channel'
-      ex: above we X channel have 1 sub(a),
+      ex:  X channel have 1 sub(a),
            Y channel have 2 sub(a,b) 
 
 ~ How to get the Number of Channel User is subscribed ?

@@ -395,7 +395,7 @@ const updateUserCover = asyncHandler(async (req, res) => {
 })
 
 
-const getUserChannelProfile = asyncHandler(async (res, req) => {
+const getUserChannelProfile = asyncHandler(async (req, res) => {
     const { userName } = req.params
 
     if (!userName?.trim()) {
@@ -417,10 +417,10 @@ const getUserChannelProfile = asyncHandler(async (res, req) => {
 
             // get all subscribers
             $lookup: {
-                from: "subscriptions", // collection name
-                localField: "_id",     // User _id (which was saved in channel )
-                foreignField: "channel",
-                as: "subscribers"
+                from: "subscriptions",   // The target collection to join with
+                localField: "_id",       // Field in the current collection (users._id)
+                foreignField: "channel", // Field in subscriptions collection to match against
+                as: "subscribers"        // Name of the new array field to store matched docs
             }
 
         },
@@ -456,89 +456,89 @@ const getUserChannelProfile = asyncHandler(async (res, req) => {
         },
         // Now to specifc things to retrun
         {
-            $project:{
-                fullName:1,
-                userName:1,
-                subscribersCount:1,
-                channelsSubscribedToCount:1,
-                isSubscribed:1,
-                avatar:1,
-                coverImage:1,
-                email:1
+            $project: {
+                fullName: 1,
+                userName: 1,
+                subscribersCount: 1,
+                channelsSubscribedToCount: 1,
+                isSubscribed: 1,
+                avatar: 1,
+                coverImage: 1,
+                email: 1
 
             }
         }
 
     ])
-    
+
     // console.log("UserChannel:",userChannel); 
 
-    if(!userChannel?.length()){
-        throw new ApiError(404,"Channel does not exist")
+    if (!userChannel?.length) {
+        throw new ApiError(404, "Channel does not exist")
 
     }
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200,userChannel[0],"user channel fecth success")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, userChannel[0], "user channel fecth success")
+        )
 
 
-    
+
 })
 
 // nested lookup
 
-const getUserWatchHistory = asyncHandler(async(req,res)=>{
+const getUserWatchHistory = asyncHandler(async (req, res) => {
 
     const user = await User.aggregate([
         {
-            $match:{
+            $match: {
                 _id: new mongoose.Types.ObjectId(req.user._id)
-             
+
                 //  _id:req.user._id // not work because req.user._id return mongodb id as:  ObjectId('sdajn3jenjen2n') , if we have done it above mongoose handle this and gives _id as string but here not
             }
         },
         {
-            $lookup:{
-                from:"videos",
-                foreignField:"_id",
-                localField:"watchHistory", // is in users
-                as:"watchHistory",
+            $lookup: {
+                from: "videos",
+                foreignField: "_id",
+                localField: "watchHistory", // is in videos
+                as: "watchHistory",
                 // nested pipeline 
-                pipeline:[
+                pipeline: [
                     // now we are doing aggregation in "videos" model
-                    // get owner(user)
+                    // get owner(user) details 
                     {
-                        $lookup:{
-                            from:"users",
-                            foreignField:"_id",
-                            localField:"owner", // is in vidoes
-                            as:"owner",
+                        $lookup: {
+                            from: "users",
+                            foreignField: "_id",
+                            localField: "owner", // is in vidoes
+                            as: "owner",
                             // to project to owner itself ?? try projecting outside owner $lookup
-                            pipeline:[
+                            pipeline: [
                                 {
-                                    $project:{
-                                        fullName:1,
-                                        username:1,
-                                        avatar:1
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                        avatar: 1
                                     }
                                 }
                             ]
-                            
+
                         }
                     },
                     {
-                        $addFields:{
-                            owner:{
-                                $first:"$owner"
-                                 // Or can use $arrayElemAt:["$owner",0] , You say why only first element : beacuse returns an arry of object and in that arry first object is our result only.
-                                 // In above function getUserChannelProfile we are returning full array ,
-                                 // but take a look at the res.json() we only sending [0]
-                                 // we will still done below but its nested , so one part done inside only.
-                                 // otherwise it will have returned like result=[ [ [],[],[] ],[],[] ]
-                                 // but now result = [ [{},{},{}],[],[],[]]
-                                }
+                        $addFields: {
+                            owner: {
+                                $first: "$owner"
+                                // Or can use $arrayElemAt:["$owner",0] , You say why only first element : beacuse returns an arry of object and in that arry first object is our result only.
+                                // In above function getUserChannelProfile we are returning full array ,
+                                // but take a look at the res.json() we only sending [0]
+                                // we will still done below but its nested , so one part done inside only.
+                                // otherwise it will have returned like result=[ []  ]
+                                // but now result = [ [{},{},{}]]
+                            }
                         }
                     }
                 ]
@@ -547,10 +547,10 @@ const getUserWatchHistory = asyncHandler(async(req,res)=>{
     ])
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200,user[0].watchHistory,"WatchHistory fetched")
-    )
+        .status(200)
+        .json(
+            new ApiResponse(200, user[0].watchHistory, "WatchHistory fetched")
+        )
 })
 
 export {
