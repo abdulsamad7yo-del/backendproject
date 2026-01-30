@@ -10,10 +10,10 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js"
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
     //TODO: get all videos based on query, sort, pagination
-   
+
     let filter = {};
     if (query) {
-        filter.title = { $regex: query}; // case-insensitive search
+        filter.title = { $regex: query }; // case-insensitive search
     }
     if (userId) {
         filter.userId = userId;
@@ -36,16 +36,16 @@ const getAllVideos = asyncHandler(async (req, res) => {
     const total = await Video.countDocuments(filter);
 
     res
-    .status(200)
-    .json({
-        page: parseInt(page),
-        limit: parseInt(limit),
-        totalPages: Math.ceil(total / limit),
-        totalResults: total,
-        data:new ApiResponse(200, videos, "Videos fetched successfully"),
-    });
+        .status(200)
+        .json({
+            page: parseInt(page),
+            limit: parseInt(limit),
+            totalPages: Math.ceil(total / limit),
+            totalResults: total,
+            data: new ApiResponse(200, videos, "Videos fetched successfully"),
+        });
 
-    
+
 })
 
 const publishAVideo = asyncHandler(async (req, res) => {
@@ -77,7 +77,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
         const publish = await Video.create(
             {
                 videoFile: videoUpload.url || videoUpload.secure_url,
-                thumbnail: thumbnailUpload.url || thumbnailUpload.secure_url ,
+                thumbnail: thumbnailUpload.url || thumbnailUpload.secure_url,
                 title,
                 description,
                 duration: videoDuration,
@@ -169,10 +169,10 @@ const updateVideo = asyncHandler(async (req, res) => {
     await video.save({ validateBeforeSave: false });
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, video, "Updated Video Information")
-    );
+        .status(200)
+        .json(
+            new ApiResponse(200, video, "Updated Video Information")
+        );
 
 
 
@@ -212,23 +212,23 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     }
 
     try {
-        const video= await Video.findById(videoId,{isPublished:1})
-        if(!video){
-            throw new ApiError(404,"No Video found")
+        const video = await Video.findById(videoId, { isPublished: 1 })
+        if (!video) {
+            throw new ApiError(404, "No Video found")
         }
 
-        const toggled = await Video.findByIdAndUpdate(videoId,{$set:{isPublished:!video.isPublished}},{ new: true })
-        
+        const toggled = await Video.findByIdAndUpdate(videoId, { $set: { isPublished: !video.isPublished } }, { new: true })
+
         return res.status(200).json(
-            new ApiResponse(200,toggled,"Toogle Success")
+            new ApiResponse(200, toggled, "Toogle Success")
         )
 
     } catch (error) {
-         throw new ApiError(500, `Error: ${error.message}`);
-    
+        throw new ApiError(500, `Error: ${error.message}`);
+
 
     }
-    
+
 })
 
 export {
