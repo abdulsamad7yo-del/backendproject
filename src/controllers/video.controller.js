@@ -8,44 +8,46 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js"
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
+    const { page = 1, limit = 10, query, sortBy = "createdAt", sortType = "desc", userId } = req.query;
     //TODO: get all videos based on query, sort, pagination
 
-    let filter = {};
+    // Build filter
+    const filter = {};
     if (query) {
-        filter.title = { $regex: query }; // case-insensitive search
+        filter.title = { $regex: query, $options: "i" }; // case-insensitive search
     }
     if (userId) {
-        filter.userId = userId;
+        filter.owner = new mongoose.Types.ObjectId(userId);
     }
 
     // Sorting
     const sortOptions = {};
     sortOptions[sortBy] = sortType === "asc" ? 1 : -1;
 
-    // Pagination
-    const skip = (page - 1) * limit;
+    // Build aggregation pipeline
+    const aggregate = Video.aggregate([
+        { $match: filter },
+        { $sort: sortOptions }
+    ]);
 
-    // Fetch videos
-    const videos = await Video.find(filter)
-        .sort(sortOptions)
-        .skip(skip)
-        .limit(parseInt(limit));
+    // Pagination options
+    const options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        customLabels: {
+            docs: "videos",
+            totalDocs: "totalResults",
+            totalPages: "totalPages"
+        }
+    };
 
-    // Count for pagination metadata
-    const total = await Video.countDocuments(filter);
+    // Run aggregatePaginate
+    const result = await Video.aggregatePaginate(aggregate, options);
 
-    res
-        .status(200)
-        .json({
-            page: parseInt(page),
-            limit: parseInt(limit),
-            totalPages: Math.ceil(total / limit),
-            totalResults: total,
-            data: new ApiResponse(200, videos, "Videos fetched successfully"),
-        });
+    res.status(200).json(
+        new ApiResponse(200, result, "Videos fetched successfully")
 
-
+    )
 })
 
 const publishAVideo = asyncHandler(async (req, res) => {
