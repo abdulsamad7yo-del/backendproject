@@ -25,7 +25,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     sortOptions[sortBy] = sortType === "asc" ? 1 : -1;
 
     // Build aggregation pipeline
-    const aggregate = Video.aggregate([
+    const aggregate = await Video.aggregate([
         { $match: filter },
         { $sort: sortOptions }
     ]);

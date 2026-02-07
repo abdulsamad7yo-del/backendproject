@@ -248,7 +248,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             httpOnly: true, //only modified by server,
             secure: true, // only send on https
         }
-        // ??? this will genrate both refresh and access token which i think not we needed , wwe only wanted to get access token right??
+        // both refresh token and access token generate and send in response and cookies (this is the rightw way)
         const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(user._id)
 
         return res
