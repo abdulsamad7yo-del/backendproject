@@ -1,8 +1,8 @@
 import mongoose, { isValidObjectId } from "mongoose"
 import { Video } from "../models/video.model.js"
-import { User } from "../models/user.model.js"
+import User from "../models/user.model.js"
 import { ApiError } from "../utils/ApiError.js"
-import { ApiResponse } from "../utils/ApiResponse.js"
+import ApiResponse from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 
@@ -197,9 +197,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
         return res
             .status(200)
             .json(
-                200,
-                deletedVideo,
-                "Video Deleted"
+                new ApiResponse(200, deletedVideo, "Video Deleted")
             )
     } catch (error) {
         throw new ApiError(500, `Error:${error.message}`)

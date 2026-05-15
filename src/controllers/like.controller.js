@@ -18,14 +18,14 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         if (existingLike) {
             // If like exists, remove it (unlike)
             await Like.deleteOne({ _id: existingLike._id })
-            return res.status(200).json(new ApiResponse(200, "Video unliked successfully"))
+            return res.status(200).json(new ApiResponse(200, {}, "Video unliked successfully"))
         }
         // If like does not exist, create it (like)
         const newLike = new Like({ video: videoId, likedBy: userId })
         await newLike.save()
         return res
             .status(200)
-            .json(new ApiResponse(200, "Video liked successfully"))
+            .json(new ApiResponse(200, {}, "Video liked successfully"))
 
     } catch (error) {
         throw new ApiError(500, "Server Error")
@@ -47,14 +47,14 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         if (existingLike) {
             // If like exists, remove it (unlike)
             await Like.deleteOne({ _id: existingLike._id })
-            return res.status(200).json(new ApiResponse(200, "Comment unliked successfully"))
+            return res.status(200).json(new ApiResponse(200, {}, "Comment unliked successfully"))
         }
         // If like does not exist, create it (like)
         const newLike = new Like({ comment: commentId, likedBy: userId })
         await newLike.save()
         return res
             .status(200)
-            .json(new ApiResponse(200, "Comment liked successfully"))
+            .json(new ApiResponse(200, {}, "Comment liked successfully"))
 
     } catch (error) {
         throw new ApiError(500, "Server Error")
@@ -72,7 +72,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
         const likedVideos = await Like.find({ likedBy: req.user._id, video: { $ne: null } }).populate('video');
         const videos = likedVideos.map(like => like.video);
 
-        return res.status(200).json(new ApiResponse(200, "Liked videos fetched successfully", videos))
+        return res.status(200).json(new ApiResponse(200, videos, "Liked videos fetched successfully"))
 
     } catch (error) {
         throw new ApiError(500, "Server Error")
